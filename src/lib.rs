@@ -1,4 +1,5 @@
 use proc_macro::TokenStream;
+use libxml::xpath::xml_xpath_compiles;
 
 /// Method for validating whether the string is a feasible xpath
 fn validate_xpath(mut xpath: String) -> std::result::Result<(), ()> {
@@ -13,7 +14,13 @@ fn validate_xpath(mut xpath: String) -> std::result::Result<(), ()> {
     }
     xpath = xpath_iter.collect();
 
-    Ok(())
+    // Now we call our libxml binding to see if the xpath coompiles
+    let compiles = xml_xpath_compiles(&xpath);
+    if !compiles {
+        Err(())
+    } else {
+        Ok(())
+    }
 }
 
 /// We don't actually want to manipulate any token streams here. In reality, this isn't
@@ -24,9 +31,13 @@ fn validate_xpath(mut xpath: String) -> std::result::Result<(), ()> {
 pub fn xpath(input: TokenStream) -> TokenStream {
 
     // If the xpath isn't syntactically valid, panic
-    validate_xpath(input.to_string()).expect("Could not validate xpath");
-
-    // Send the token stream right back out
-    input
+    match validate_xpath(input.to_string()) {
+        Ok(_) => input,
+        Err(_) => {
+            quote::quote! {
+                compile_error!("Invalid XPath");
+            }.into()
+        }
+    }
 }
 

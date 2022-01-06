@@ -1,0 +1,18 @@
+XPath error : Invalid expression
+//a/[invalid syntax]
+    ^
+error: macro expansion ignores token `;` and any following
+ --> tests/invalid_syntax_returns_error.rs:4:27
+  |
+4 |     let all_links: &str = xpath!("//a/[invalid syntax]");
+  |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ caused by the macro expansion here
+  |
+  = note: the usage of `xpath!` is likely invalid in expression context
+
+error: Invalid XPath
+ --> tests/invalid_syntax_returns_error.rs:4:27
+  |
+4 |     let all_links: &str = xpath!("//a/[invalid syntax]");
+  |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: this error originates in the macro `xpath` (in Nightly builds, run with -Z macro-backtrace for more info)
